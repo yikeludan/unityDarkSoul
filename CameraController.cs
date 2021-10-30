@@ -41,12 +41,10 @@ public class CameraController : MonoBehaviour
         this.tempEulerX = Mathf.Clamp(this.tempEulerX, -40, 30);
         this.CameraHandle.transform.localEulerAngles = new Vector3(this.tempEulerX, 0, 0);
 
-
-
-        //人物保存不转动
         this.player.transform.eulerAngles = tempPlayerEuler;
 
         this.camera.transform.position = Vector3.Lerp(this.camera.transform.position, this.transform.position, 0.3f);
-        this.camera.transform.rotation = this.transform.rotation;
+        //this.camera.transform.rotation = this.transform.rotation;
+        this.camera.transform.LookAt(this.CameraHandle.transform);
     }
 }

@@ -16,7 +16,8 @@ public class ActorController : MonoBehaviour
     private PlayerInput pi;
     private bool lockPlanrVec = false;
 
-    
+
+    private Vector3 delitaPos;
     private Vector3 jumpVec3;
 
     private float lerpTarget;
@@ -68,9 +69,12 @@ public class ActorController : MonoBehaviour
 
     private void FixedUpdate()
     {
+        this.rb.position += this.delitaPos;
         //this.rb.position += this.rbDir * Time.fixedDeltaTime;
         this.rb.velocity = new Vector3(this.rbDir.x, this.rb.velocity.y, this.rbDir.z) + this.jumpVec3;
         this.jumpVec3 = Vector3.zero; 
+        this.delitaPos = Vector3.zero;
+        
     }
 
     public void onJumpEnter()
@@ -152,5 +156,16 @@ public class ActorController : MonoBehaviour
     }
 
 
-    
+
+    public void OnUpDateRootMotion(object deltaPosition)
+    {
+        if (CheckAnState("attackc", "Attack"))
+        {
+            this.delitaPos += (this.delitaPos + (Vector3)deltaPosition)/2.0f;
+        }
+
+
+    }
+
+
 }
