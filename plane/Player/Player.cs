@@ -66,6 +66,11 @@ public class Player : Chacter
 
     private Coroutine reHealthTempCor;
 
+    public AnimationCurve animationCurve;
+    
+    private float timer = 0;
+
+
     [Range(0,2)]
     public int weaponPower = 0;
 
@@ -204,12 +209,25 @@ public class Player : Chacter
        this._collider2D.isTrigger = true;
        this.currentRoll = 0f;
        var scale = this.transform.localScale;
+       float value = 0;
        while (this.currentRoll<this.maxRoll)
        {
+           if (value >= 1)
+           {
+               this.timer = 0;
+           }
+           this.timer += Time.deltaTime;
+          
+
+          value  = this.animationCurve.Evaluate(this.timer);
+          Vector3 dirScale = new Vector3(value, value, value);
+          print("value = "+value); 
+           
            this.currentRoll += this.rollSpeed * Time.deltaTime;
            this.transform.rotation = Quaternion.AngleAxis(this.currentRoll,Vector3.right);
-           this.transform.localScale = BezierCurve.QuadraticPoint(Vector3.one, Vector3.one, this.dogeScale,
-               this.currentRoll / this.maxRoll);
+           this.transform.localScale = Vector3.Lerp(this.transform.localScale,dirScale,this.timer);
+           /*this.transform.localScale = BezierCurve.QuadraticPoint(Vector3.one, Vector3.one, this.dogeScale,
+               this.currentRoll / this.maxRoll);*/
            
            
            /*
@@ -345,4 +363,7 @@ public class Player : Chacter
            yield return null;
        }
    }
+   
+   
+   
 }
