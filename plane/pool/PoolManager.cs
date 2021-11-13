@@ -9,7 +9,9 @@ public class PoolManager : MonoBehaviour
     
     public Pool[] enemeyPools;
     public Pool[] vfxPools;
+    public Pool[] eneryPlayerPools;
 
+    
 
     static Dictionary<GameObject, Pool> dictionary;
 
@@ -28,12 +30,13 @@ public class PoolManager : MonoBehaviour
         }
     }
 
-    void Start()
+    void Awake()
     {
         dictionary = new Dictionary<GameObject, Pool>();
         this.Init(pools);
         this.Init(enemeyPools);
         this.Init(vfxPools);
+        this.Init(eneryPlayerPools);
     }
 
     public static GameObject Release(GameObject prefab)

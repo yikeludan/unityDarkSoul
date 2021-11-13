@@ -5,12 +5,17 @@ using UnityEngine;
 
 public class Enemy : Chacter
 {
-   public int deathEnergeBouns = 3;
+    public int deathEnergeBouns = 3;
 
-   public override void Die()
-   {
-      PlayerEnery.instance.Obtain(deathEnergeBouns);
-      base.Die();
+
+    public AudioClip dieSound;
+    public override void Die()
+    {
+        PlayerEnery.instance.Obtain(deathEnergeBouns);
+        EnemyManager.instance.RemoveList(gameObject);
+        AudioManager.Instance.playSFX(this.dieSound,1f);
+        ScoreManager.Instance.addScore(20);
+        base.Die();
       
-   }
+    }
 }

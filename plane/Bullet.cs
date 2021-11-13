@@ -13,6 +13,8 @@ public class Bullet : MonoBehaviour
 
     protected GameObject target;
     
+ 
+    
     
 
    
@@ -22,26 +24,37 @@ public class Bullet : MonoBehaviour
         StartCoroutine(moveDir());
     }
 
-   
+    
 
 
     IEnumerator moveDir()
     {
         while (true)
         {
-            this.transform.Translate(this.vector2 * this.moveSpeed* Time.deltaTime);
+            this.Move();
             yield return null;
         }
     }
 
-    protected virtual  void OnCollisionEnter2D(Collision2D collision2D)
+    protected virtual void OnCollisionEnter2D(Collision2D collision2D)
     {
         if (collision2D.gameObject.TryGetComponent<Chacter>(out Chacter chacter))
         {
-            chacter.TakeDamage(10);
+            chacter.TakeDamage(1);
             var collPoint = collision2D.GetContact(0);
             PoolManager.Release(this.hitVFX, collPoint.point, Quaternion.LookRotation(collPoint.normal));
             gameObject.SetActive(false);
         }
     }
+
+   protected void SetTarget(GameObject Target)
+    {
+        this.target = Target;
+    }
+
+   public void Move()
+   {
+       this.transform.Translate(this.vector2 * this.moveSpeed* Time.deltaTime);
+
+   }
 }

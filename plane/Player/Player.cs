@@ -31,7 +31,8 @@ public class Player : Chacter
     
     public GameObject bullet2;
 
-
+    public GameObject bullet4;
+    
     public Transform muzzle;
     
     public Transform muzzleTop;
@@ -39,9 +40,9 @@ public class Player : Chacter
     public Transform muzzleBottom;
 
     private WaitForSeconds waitForSeconds;
-
+    
     private Collider2D _collider2D;
-
+    
     private float maxRoll = 360f;
 
     public float currentRoll;
@@ -56,6 +57,11 @@ public class Player : Chacter
 
     private float t1 = 0;
     private float t2 = 0;
+    
+    
+    public AnimationCurve animationCurve;
+    
+    private float timer = 0;
 
     
     [Header("---health-----")]
@@ -66,13 +72,32 @@ public class Player : Chacter
 
     private Coroutine reHealthTempCor;
 
-    public AnimationCurve animationCurve;
-    
-    private float timer = 0;
+    public GameObject overSFX;
 
+    public GameObject overTailSFX;
 
     [Range(0,2)]
     public int weaponPower = 0;
+
+    public AudioClip SFXSound;
+
+    public float SFXVolume = 1f;
+    
+    
+    public AudioClip DogeSound;
+
+    public float DogeVolume = 1f;
+
+    private bool isOver = false;
+
+    private bool isOverFire = false;
+
+    
+    public float overDogeFactor = 1;
+    
+    public float overRiveSpeedFactor = 1.2f;
+
+    public float overFireFactor = 1.2f;
 
     protected  override void OnEnable()
     {
@@ -82,6 +107,10 @@ public class Player : Chacter
         this.input.onFire += onFire;
         this.input.stopFire += stopFire;
         this.input.onDoge += onDoge;
+        this.input.onOver += onOver;
+        PlayerOver.on += onOverOn;
+        PlayerOver.down += onOverDown;
+
 
     }
 
@@ -92,7 +121,10 @@ public class Player : Chacter
         this.input.onStopMove -= StopMove;
         this.input.onFire -= onFire;
         this.input.stopFire -= stopFire;
-        this.input.onDoge -= onDoge;
+        this.input.onOver -= onOver;
+        
+        PlayerOver.on -= onOverOn;
+        PlayerOver.down -= onOverDown;
 
     }
 
@@ -100,7 +132,7 @@ public class Player : Chacter
     {
         this._rigidbody2D = this.GetComponent<Rigidbody2D>();
         this._collider2D = this.GetComponent<Collider2D>();
-        this.dogeDuration = this.maxRoll / rollSpeed;
+
     }
 
     private void Start()
@@ -170,7 +202,7 @@ public class Player : Chacter
 
         Quaternion qu = Quaternion.AngleAxis(28 * vec2.y,Vector3.right);
         this.acCor = StartCoroutine(acMove(this.accTime,vec2.normalized * 6,qu));
-        StartCoroutine(MoveLimit());
+        StartCoroutine(nameof(MoveLimit));
         
      }
    
@@ -183,7 +215,7 @@ public class Player : Chacter
             StopCoroutine(this.acCor);
         }
         this.acCor = StartCoroutine(acMove(this.decTime,Vector2.zero,Quaternion.identity));
-        StopCoroutine(MoveLimit());
+        StopCoroutine(nameof(MoveLimit));
    }
 
    void onFire()
@@ -193,89 +225,28 @@ public class Player : Chacter
        StartCoroutine("buildBullet");
    }
    
-   void onDoge()
-   {
-       if (this.isRoll|| !PlayerEnery.instance.isEnougth(25))
-       {
-           return;
-       }
-       StartCoroutine(nameof(onDogeCoroutine));
-   }
-
-   IEnumerator onDogeCoroutine()
-   {
-       this.isRoll = true;
-       PlayerEnery.instance.Use(25);
-       this._collider2D.isTrigger = true;
-       this.currentRoll = 0f;
-       var scale = this.transform.localScale;
-       float value = 0;
-       while (this.currentRoll<this.maxRoll)
-       {
-           if (value >= 1)
-           {
-               this.timer = 0;
-           }
-           this.timer += Time.deltaTime;
-          
-
-          value  = this.animationCurve.Evaluate(this.timer);
-          Vector3 dirScale = new Vector3(value, value, value);
-          print("value = "+value); 
-           
-           this.currentRoll += this.rollSpeed * Time.deltaTime;
-           this.transform.rotation = Quaternion.AngleAxis(this.currentRoll,Vector3.right);
-           this.transform.localScale = Vector3.Lerp(this.transform.localScale,dirScale,this.timer);
-           /*this.transform.localScale = BezierCurve.QuadraticPoint(Vector3.one, Vector3.one, this.dogeScale,
-               this.currentRoll / this.maxRoll);*/
-           
-           
-           /*
-           if (this.currentRoll < this.maxRoll / 2f)
-           {
-               scale.x = Mathf.Clamp(scale.x - Time.deltaTime / this.dogeDuration, this.dogeScale.x,1f);
-               scale.y = Mathf.Clamp(scale.y - Time.deltaTime / this.dogeDuration, this.dogeScale.y,1f);
-               scale.z = Mathf.Clamp(scale.z - Time.deltaTime / this.dogeDuration, this.dogeScale.z,1f);
-               
-              
-               
-               /*this.t1 += Time.deltaTime / this.dogeDuration;
-               this.transform.localScale = Vector3.Lerp(this.transform.localScale, this.dogeScale, t1);
-               #1#
-               
-
-
-               //scale -= (Time.deltaTime / this.dogeDuration) * Vector3.one;
-           }
-           else
-           {
-             
-               scale.x = Mathf.Clamp(scale.x + Time.deltaTime / this.dogeDuration, this.dogeScale.x,1f);
-               scale.y = Mathf.Clamp(scale.y + Time.deltaTime / this.dogeDuration, this.dogeScale.y,1f);
-               scale.z = Mathf.Clamp(scale.z + Time.deltaTime / this.dogeDuration, this.dogeScale.z,1f);
-              
-              
-               /*
-               this.t2 += Time.deltaTime / this.dogeDuration;
-               this.transform.localScale = Vector3.Lerp(this.transform.localScale, Vector3.one, t2);
-               #1#
-
-
-              // scale += (Time.deltaTime / this.dogeDuration) * Vector3.one;
-           }
-           this.transform.localScale = scale;*/
-
-           yield return null;
-       }
-       
-       
-       this._collider2D.isTrigger = false;
-       this.isRoll = false;
-   }
-
    void stopFire()
    {
        StopCoroutine("buildBullet");
+   }
+
+   void onOverOn()
+   {
+       this.isOver = true;
+   }
+   
+   void onOverDown()
+   {
+       this.isOver = false;
+   }
+   
+   void onOver()
+   {
+       if (!PlayerEnery.instance.isEnougth(PlayerEnery.instance.max))
+       {
+           return;
+       }
+       PlayerOver.on.Invoke();
    }
 
    IEnumerator buildBullet()
@@ -314,9 +285,9 @@ public class Player : Chacter
 
                    break;
                case 2:
-                   PoolManager.Release(this.bullet, this.muzzle.transform.position,this.transform.rotation);
-                   PoolManager.Release(this.bullet1, this.muzzleTop.transform.position,this.transform.rotation);
-                   PoolManager.Release(this.bullet2, this.muzzleBottom.transform.position,this.transform.rotation);
+                   PoolManager.Release(this.isOverFire == false?this.bullet:this.bullet4, this.muzzle.transform.position,this.transform.rotation);
+                   PoolManager.Release(this.isOverFire == false?this.bullet1:this.bullet4, this.muzzleTop.transform.position,this.transform.rotation);
+                   PoolManager.Release(this.isOverFire == false?this.bullet2:this.bullet4, this.muzzleBottom.transform.position,this.transform.rotation);
 
                    break;
                case 3:
@@ -324,6 +295,7 @@ public class Player : Chacter
                case 4:
                    break;
            }
+           AudioManager.Instance.playSFX(this.SFXSound,this.SFXVolume);
            yield return this.waitForSeconds;
        }
    }
@@ -342,6 +314,8 @@ public class Player : Chacter
    IEnumerator acMove(float time,Vector2 vector2,Quaternion moveRoation)
    {
        float t = 0;
+       Vector2 preVec = this._rigidbody2D.velocity;
+       Quaternion preQu = this.transform.rotation;
        while (t < 1f)
        {
            t += Time.fixedDeltaTime / time;
@@ -365,5 +339,52 @@ public class Player : Chacter
    }
    
    
+   void onDoge()
+   {
+       if (this.isRoll|| !PlayerEnery.instance.isEnougth(25))
+       {
+           return;
+       }
+
+       this.isOverFire = true;
+       this.overSFX.SetActive(true);
+       this.overTailSFX.SetActive(true);
+       this.weaponPower = 2;
+       AudioManager.Instance.playSFX(this.DogeSound,this.DogeVolume);
+       StartCoroutine(nameof(onDogeCoroutine));
+   }
    
+   
+    IEnumerator onDogeCoroutine()
+   {
+       this.isRoll = true;
+       PlayerEnery.instance.Use(25);
+       this._collider2D.isTrigger = true;
+       this.currentRoll = 0f;
+       var scale = this.transform.localScale;
+       float value = 0;
+       while (this.currentRoll<this.maxRoll)
+       {
+           if (value >= 1)
+           {
+               this.timer = 0;
+           }
+           this.timer += Time.deltaTime;
+          
+
+          value  = this.animationCurve.Evaluate(this.timer);
+          Vector3 dirScale = new Vector3(value, value, value);
+
+           this.currentRoll += this.rollSpeed * Time.deltaTime;
+           this.transform.rotation = Quaternion.AngleAxis(this.currentRoll,Vector3.right);
+           this.transform.localScale = Vector3.Lerp(this.transform.localScale,dirScale,this.timer);
+          
+
+           yield return null;
+       }
+       
+       
+       this._collider2D.isTrigger = false;
+       this.isRoll = false;
+   }
 }

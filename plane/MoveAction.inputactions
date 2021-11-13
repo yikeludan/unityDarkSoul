@@ -22,9 +22,17 @@
                     "interactions": ""
                 },
                 {
-                    "name": "Dodge",
+                    "name": "Doge",
                     "type": "Button",
-                    "id": "8a51c060-0c74-459f-a16f-dbedf723bd92",
+                    "id": "4f616ee1-3c4c-4bb2-a21b-17a2940153b1",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": ""
+                },
+                {
+                    "name": "Over",
+                    "type": "Button",
+                    "id": "f67ed4c7-ac25-4fca-a7c5-15d7841b5b04",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": ""
@@ -132,12 +140,23 @@
                 },
                 {
                     "name": "",
-                    "id": "e1661c4b-2efc-41c3-9fe8-53b5325debca",
+                    "id": "dc05dbfc-d0f8-425f-9e35-d726eb1ae131",
                     "path": "<Keyboard>/space",
                     "interactions": "",
                     "processors": "",
                     "groups": "New control scheme",
-                    "action": "Dodge",
+                    "action": "Doge",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "10ff1e13-4e44-47d6-90d3-65cd88b0c1e9",
+                    "path": "<Keyboard>/b",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "New control scheme",
+                    "action": "Over",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

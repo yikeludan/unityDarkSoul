@@ -35,9 +35,17 @@ public class @MoveActionSys : IInputActionCollection, IDisposable
                     ""interactions"": """"
                 },
                 {
-                    ""name"": ""Dodge"",
+                    ""name"": ""Doge"",
                     ""type"": ""Button"",
-                    ""id"": ""8a51c060-0c74-459f-a16f-dbedf723bd92"",
+                    ""id"": ""4f616ee1-3c4c-4bb2-a21b-17a2940153b1"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """"
+                },
+                {
+                    ""name"": ""Over"",
+                    ""type"": ""Button"",
+                    ""id"": ""f67ed4c7-ac25-4fca-a7c5-15d7841b5b04"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """"
@@ -145,12 +153,23 @@ public class @MoveActionSys : IInputActionCollection, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""e1661c4b-2efc-41c3-9fe8-53b5325debca"",
+                    ""id"": ""dc05dbfc-d0f8-425f-9e35-d726eb1ae131"",
                     ""path"": ""<Keyboard>/space"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""New control scheme"",
-                    ""action"": ""Dodge"",
+                    ""action"": ""Doge"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""10ff1e13-4e44-47d6-90d3-65cd88b0c1e9"",
+                    ""path"": ""<Keyboard>/b"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""New control scheme"",
+                    ""action"": ""Over"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -190,7 +209,8 @@ public class @MoveActionSys : IInputActionCollection, IDisposable
         m_GamePlay = asset.FindActionMap("GamePlay", throwIfNotFound: true);
         m_GamePlay_Move = m_GamePlay.FindAction("Move", throwIfNotFound: true);
         m_GamePlay_File = m_GamePlay.FindAction("File", throwIfNotFound: true);
-        m_GamePlay_Dodge = m_GamePlay.FindAction("Dodge", throwIfNotFound: true);
+        m_GamePlay_Doge = m_GamePlay.FindAction("Doge", throwIfNotFound: true);
+        m_GamePlay_Over = m_GamePlay.FindAction("Over", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -242,14 +262,16 @@ public class @MoveActionSys : IInputActionCollection, IDisposable
     private IGamePlayActions m_GamePlayActionsCallbackInterface;
     private readonly InputAction m_GamePlay_Move;
     private readonly InputAction m_GamePlay_File;
-    private readonly InputAction m_GamePlay_Dodge;
+    private readonly InputAction m_GamePlay_Doge;
+    private readonly InputAction m_GamePlay_Over;
     public struct GamePlayActions
     {
         private @MoveActionSys m_Wrapper;
         public GamePlayActions(@MoveActionSys wrapper) { m_Wrapper = wrapper; }
         public InputAction @Move => m_Wrapper.m_GamePlay_Move;
         public InputAction @File => m_Wrapper.m_GamePlay_File;
-        public InputAction @Dodge => m_Wrapper.m_GamePlay_Dodge;
+        public InputAction @Doge => m_Wrapper.m_GamePlay_Doge;
+        public InputAction @Over => m_Wrapper.m_GamePlay_Over;
         public InputActionMap Get() { return m_Wrapper.m_GamePlay; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -265,9 +287,12 @@ public class @MoveActionSys : IInputActionCollection, IDisposable
                 @File.started -= m_Wrapper.m_GamePlayActionsCallbackInterface.OnFile;
                 @File.performed -= m_Wrapper.m_GamePlayActionsCallbackInterface.OnFile;
                 @File.canceled -= m_Wrapper.m_GamePlayActionsCallbackInterface.OnFile;
-                @Dodge.started -= m_Wrapper.m_GamePlayActionsCallbackInterface.OnDodge;
-                @Dodge.performed -= m_Wrapper.m_GamePlayActionsCallbackInterface.OnDodge;
-                @Dodge.canceled -= m_Wrapper.m_GamePlayActionsCallbackInterface.OnDodge;
+                @Doge.started -= m_Wrapper.m_GamePlayActionsCallbackInterface.OnDoge;
+                @Doge.performed -= m_Wrapper.m_GamePlayActionsCallbackInterface.OnDoge;
+                @Doge.canceled -= m_Wrapper.m_GamePlayActionsCallbackInterface.OnDoge;
+                @Over.started -= m_Wrapper.m_GamePlayActionsCallbackInterface.OnOver;
+                @Over.performed -= m_Wrapper.m_GamePlayActionsCallbackInterface.OnOver;
+                @Over.canceled -= m_Wrapper.m_GamePlayActionsCallbackInterface.OnOver;
             }
             m_Wrapper.m_GamePlayActionsCallbackInterface = instance;
             if (instance != null)
@@ -278,9 +303,12 @@ public class @MoveActionSys : IInputActionCollection, IDisposable
                 @File.started += instance.OnFile;
                 @File.performed += instance.OnFile;
                 @File.canceled += instance.OnFile;
-                @Dodge.started += instance.OnDodge;
-                @Dodge.performed += instance.OnDodge;
-                @Dodge.canceled += instance.OnDodge;
+                @Doge.started += instance.OnDoge;
+                @Doge.performed += instance.OnDoge;
+                @Doge.canceled += instance.OnDoge;
+                @Over.started += instance.OnOver;
+                @Over.performed += instance.OnOver;
+                @Over.canceled += instance.OnOver;
             }
         }
     }
@@ -298,6 +326,7 @@ public class @MoveActionSys : IInputActionCollection, IDisposable
     {
         void OnMove(InputAction.CallbackContext context);
         void OnFile(InputAction.CallbackContext context);
-        void OnDodge(InputAction.CallbackContext context);
+        void OnDoge(InputAction.CallbackContext context);
+        void OnOver(InputAction.CallbackContext context);
     }
 }

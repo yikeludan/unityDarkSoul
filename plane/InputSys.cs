@@ -15,6 +15,7 @@ public class InputSys : ScriptableObject, MoveActionSys.IGamePlayActions
     public event UnityAction onFire = delegate {};
     public event UnityAction stopFire = delegate {};
     public event UnityAction onDoge = delegate {};
+    public event UnityAction onOver = delegate {};
 
      void OnEnable()
     {
@@ -74,13 +75,38 @@ public class InputSys : ScriptableObject, MoveActionSys.IGamePlayActions
         }
     }
 
-    public void OnDodge(InputAction.CallbackContext context)
+    public void OnDoge(InputAction.CallbackContext context)
     {
         if (context.phase == InputActionPhase.Performed)
         {
             if (onDoge != null)
             {
                 onDoge.Invoke();
+            }
+        }
+        if (context.phase == InputActionPhase.Canceled)
+        {
+            if (onDoge != null)
+            {
+                onDoge.Invoke();
+            }
+        }
+    }
+
+    public void OnOver(InputAction.CallbackContext context)
+    {
+        if (context.phase == InputActionPhase.Performed)
+        {
+            if (onOver != null)
+            {
+                onOver.Invoke();
+            }
+        }
+        if (context.phase == InputActionPhase.Canceled)
+        {
+            if (onOver != null)
+            {
+                onOver.Invoke();
             }
         }
     }

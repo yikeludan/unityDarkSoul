@@ -25,15 +25,22 @@ public class StatsBar : MonoBehaviour
 
     private float fillDelay = 0.5f;
 
-    public bool delayFill = true;
+    private bool delayFill = true;
 
     private Coroutine fillCoroutine;
+
+    protected float prefillAmount;
     
     private void Awake()
     {
         this.canvas = this.GetComponent<Canvas>();
         canvas.worldCamera = Camera.main;
         this.waitForDelayFill = new WaitForSeconds(this.fillDelay);
+    }
+
+    private void OnDisable()
+    {
+        StopAllCoroutines();
     }
 
     public virtual void Initialazle(float currentValue,float maxValue)
@@ -72,10 +79,11 @@ public class StatsBar : MonoBehaviour
             yield return this.waitForDelayFill;
         }
         t = 0f;
+        prefillAmount = currentFillAmount;
         while (t<1f)
         {
             t += Time.deltaTime * this.fillDelay;
-            this.currentFillAmount = Mathf.Lerp(this.currentFillAmount, this.targetFillAmount, t);
+            this.currentFillAmount = Mathf.Lerp(prefillAmount, this.targetFillAmount, t);
             image.fillAmount = currentFillAmount;
             yield return null;
         }

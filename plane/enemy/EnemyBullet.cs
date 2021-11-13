@@ -14,9 +14,5 @@ public class EnemyBullet : Bullet
         }
     }
 
-    protected override void OnCollisionEnter2D(Collision2D collision2D)
-    {
-        base.OnCollisionEnter2D(collision2D);
-        PlayerEnery.instance.Obtain(-PlayerEnery.instance.percent);
-    }
+   
 }

@@ -41,10 +41,10 @@ public class EnemyController : MonoBehaviour
        Vector3 targetPos = ViewPort.instance.randomRightHalfMovePos(this.paddingX, this.paddingY);
        while (gameObject.activeSelf)
        {
-           if (Vector3.Distance(this.transform.position, targetPos) >= Mathf.Epsilon)
+           if (Vector3.Distance(this.transform.position, targetPos) >= this.moveSpeed * Time.fixedDeltaTime)
            {
               this.transform.position = 
-                  Vector3.MoveTowards(this.transform.position, targetPos, this.moveSpeed * Time.deltaTime);
+                  Vector3.MoveTowards(this.transform.position, targetPos, this.moveSpeed * Time.fixedDeltaTime);
               this.transform.rotation = Quaternion.AngleAxis((targetPos - this.transform.position).normalized.y 
                                                              * moveRotation,Vector3.right);
            }
@@ -53,7 +53,7 @@ public class EnemyController : MonoBehaviour
                targetPos = ViewPort.instance.randomRightHalfMovePos(this.paddingX, this.paddingY);
            }
 
-           yield return null;
+           yield return new WaitForFixedUpdate();
        }
    }
 

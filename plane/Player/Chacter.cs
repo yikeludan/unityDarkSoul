@@ -32,7 +32,7 @@ public class Chacter : MonoBehaviour
     {
         this.health = this.maxHeath;
         Debug.Log("this.showOnHeadHealthBar = "+this.showOnHeadHealthBar);
-        if (this.showOnHeadHealthBar && gameObject.activeSelf)
+        if (this.showOnHeadHealthBar)
         {
             this.disPlayOnHeadHealthBar();
         }
@@ -42,15 +42,10 @@ public class Chacter : MonoBehaviour
         }
     }
 
-    private void OnDisable()
-    {
-        StopAllCoroutines();
-    }
-
     public virtual void TakeDamage(float damage)
     {
         this.health -= damage;
-        if (this.showOnHeadHealthBar)
+        if (this.showOnHeadHealthBar && gameObject.activeSelf)
         {
             this.onHeadHealthBar.updateStatus(health,maxHeath);
         }
