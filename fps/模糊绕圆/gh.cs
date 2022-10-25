@@ -21,6 +21,9 @@ public class gh : MonoBehaviour
 
     private Vector3 center_pos;
 
+
+//https://www.yuque.com/yikeludan/hvgb01/gekmv4
+
     private void Awake()
     {
         this.center_pos = this.transform.localPosition;
