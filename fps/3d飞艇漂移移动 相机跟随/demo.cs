@@ -15,6 +15,7 @@ public class demo : MonoBehaviour
 
     public Vector3 cameraDec;
 
+    public float mulSpeed;
 
     public Transform camera;
 
@@ -26,8 +27,14 @@ public class demo : MonoBehaviour
 
     public float rotSpeed;
 
+    private float shipAngel = 0f;
+
+    private float zAngel = 0;
+
 
     public float raduisSpeed;
+
+    private float decrTime = 0;
 
 
     private Vector3 rotOffsetVec3 = new Vector3(20, 0, 0);
@@ -42,7 +49,9 @@ public class demo : MonoBehaviour
         this.speed = 350f;
         this.rigidbody.drag = 2.5f;
         this.cameraDec =  new Vector3(0, 45, -60);
-        this.raduisSpeed = 150f;
+        this.raduisSpeed = 350f;
+        this.mulSpeed = 0.2f;
+
         flag = false;
 
     }
@@ -52,19 +61,19 @@ public class demo : MonoBehaviour
     {
         //this.Move();
         this.Dir();
-        this.RotateByRotCenterOffsetVec3();
+      //  this.RotateByRotCenterOffsetVec3();
        // this.dirV2();
 
     }
 
     private void FixedUpdate()
     {
-       this.Move1();
+       this.Move3();
     }
 
     private void LateUpdate()
     {
-       // this.CameraFollowMove();
+        this.CameraFollowMove();
     }
 
     void CameraFollowMove()
@@ -81,7 +90,34 @@ public class demo : MonoBehaviour
 
 
         this.camera.position = Vector3.Lerp(this.camera.position,
-            this.transform.position + new Vector3(0,20,0)+ this.transform.forward * -40,
+            this.transform.position + new Vector3(0,20,0) + this.transform.forward * -40,
+            5f * Time.fixedDeltaTime);
+        Vector3 dir = this.transform.position - this.camera.position;
+        Quaternion quaternion = Quaternion.LookRotation(dir);
+        this.camera.rotation = quaternion;
+
+    }
+
+    void RotFollowMoveV1()
+    {
+
+
+        this.testRot.position = Vector3.Lerp(this.testRot.position,
+            this.transform.position + new Vector3(0,20,0) + this.transform.forward * -40,
+            5f * Time.fixedDeltaTime);
+        /*Vector3 dir = this.transform.position - this.camera.position;
+        Quaternion quaternion = Quaternion.LookRotation(dir);
+        this.camera.rotation = quaternion;*/
+
+    }
+
+
+    void CameraFollowMoveV2()
+    {
+
+
+        this.camera.position = Vector3.Lerp(this.camera.position,
+            this.transform.position + new Vector3(0,20,0) + this.transform.forward * -40,
             5f * Time.fixedDeltaTime);
         Vector3 dir = this.transform.position - this.camera.position;
         Quaternion quaternion = Quaternion.LookRotation(dir);
@@ -123,17 +159,99 @@ public class demo : MonoBehaviour
     
     void Move1()
     {
-       
+
+        Debug.Log("this.dir = "+ this.dir);
         if (this.dir != Vector3.zero)
         {
             this.transform.rotation = Quaternion.RotateTowards(this.transform.rotation,
                 Quaternion.LookRotation(this.dir), Time.deltaTime * this.raduisSpeed);
             this.speed = Mathf.Lerp(1, 550, Time.time * this.rotSpeed);
             this.rigidbody.AddForce(this.transform.forward * this.speed,ForceMode.Force);
-            // this.rigidbody.velocity = this.dir * this.speed;
+           //this.rigidbody.velocity = this.transform.forward * this.speed;
 
         }
-        this.CameraFollowMoveV1();
+       // this.CameraFollowMoveV2();
+
+    }
+
+
+    void Move2()
+    {
+
+        if (this.dir != Vector3.zero)
+        {
+            float z = this.dir.z;
+            float x = this.dir.x;
+            this.speed = Mathf.Lerp(this.speed, 550, Time.time * this.rotSpeed * Time.fixedDeltaTime);
+
+            float zAngel = Mathf.Lerp(0,45,decrTime);
+            if (x > 0)
+            {
+                zAngel = -zAngel;
+            }
+
+            if (x == 0)
+            {
+                zAngel = 0;
+            }
+
+            // Debug.Log("time  = "+ decrTime+", zAngel ="+zAngel);
+
+
+            this.shipAngel += x * this.speed * this.mulSpeed * Time.fixedDeltaTime;
+            this.transform.rotation = Quaternion.Euler(0, this.shipAngel, zAngel);
+           // this.transform.Rotate(Vector3.up, x * this.speed * this.mulSpeed * Time.fixedDeltaTime);
+            //this.transform.Rotate(Vector3.forward, 50 * Time.fixedDeltaTime);
+
+
+            //this.transform.rotation = Quaternion.Euler(0,0,0);
+            //this.transform.position = this.transform.forward * this.speed * Time.deltaTime;
+
+         //   this.rigidbody.AddForce(this.transform.forward  * this.speed ,ForceMode.Force);
+           decrTime += Time.fixedDeltaTime * 0.5f;
+
+
+        }
+        else
+        {
+            decrTime = 0;
+        }
+        //this.CameraFollowMoveV1();
+
+    }
+
+
+    void Move3()
+    {
+
+        if (this.dir != Vector3.zero)
+        {
+            float z = this.dir.z;
+            float x = this.dir.x;
+            float zResAnagel = 0;
+            this.speed = Mathf.Lerp(this.speed, 550, Time.time * this.rotSpeed * Time.fixedDeltaTime);
+            this.zAngel = Mathf.Lerp(this.zAngel,45,decrTime);
+            Debug.Log("zAngel = "+zAngel);
+            if (x > 0)
+            {
+                zResAnagel = -zAngel;
+            }
+
+            if (x == 0)
+            {
+                zResAnagel = 0;
+            }
+
+            this.shipAngel += x * this.speed * this.mulSpeed * Time.fixedDeltaTime;
+            this.transform.rotation = Quaternion.Euler(0, this.shipAngel, zResAnagel);
+            this.rigidbody.AddForce(this.transform.forward  * this.speed ,ForceMode.Force);
+            decrTime += Time.fixedDeltaTime * 0.5f;
+        }
+        else
+        {
+            decrTime = 0;
+        }
+        //this.CameraFollowMoveV1();
 
     }
     
